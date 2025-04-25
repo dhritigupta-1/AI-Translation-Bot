@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaQuest | Translation Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --error: #ff3333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: var(--accent);
+            margin: 0.5rem auto;
+            border-radius: 2px;
+        }
+        
+        h2 {
+            text-align: center;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .question-block {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .question-block:hover {
+            transform: translateY(-3px);
+        }
+        
+        .question-block p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .question-block strong {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            background-color: var(--light);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+            border-color: var(--accent);
+        }
+        
+        .option input {
+            margin-right: 1rem;
+            transform: scale(1.2);
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--light);
+            transform: translateY(-2px);
+        }
+        
+        .result-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0% calc(var(--percentage) * 1%), var(--light) calc(var(--percentage) * 1%) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .score-inner {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            color: var(--primary);
+            line-height: 1;
+        }
+        
+        .score-total {
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        
+        .result-status {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .correct {
+            color: var(--success);
+        }
+        
+        .incorrect {
+            color: var(--error);
+        }
+        
+        .feedback-icon {
+            margin-right: 0.5rem;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--light);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            width: calc(100% * var(--progress));
+            transition: width 0.5s ease;
+        }
+        
+        .language-tag {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-language"></i> LinguaQuest</h1>
+        
+        {% if quiz_over %}
+            <div class="result-container">
+                <div class="score-circle" style="--percentage: {{ (score/10)*100 }};">
+                    <div class="score-inner">
+                        <div class="score-value">{{ score }}</div>
+                        <div class="score-total">out of 10</div>
+                    </div>
+                </div>
+                
+                <h2>Quiz Results</h2>
+                
+                {% if score >= 8 %}
+                <p class="result-status">Excellent! You're a translation master! <i class="fas fa-trophy"></i></p>
+                {% elif score >= 5 %}
+                <p class="result-status">Good job! Keep practicing! <i class="fas fa-thumbs-up"></i></p>
+                {% else %}
+                <p class="result-status">Keep learning! You'll get better! <i class="fas fa-seedling"></i></p>
+                {% endif %}
+                
+                <div class="progress-container">
+                    <div class="progress-bar" style="--progress: {{ score/10 }};"></div>
+                </div>
+                
+                {% for r in results %}
+                    <div class="question-block animate-fade delay-{{ loop.index % 3 }}">
+                        <p><strong>Q{{ loop.index }}. Translate "{{ r.question }}"</strong> <span class="language-tag">{{ r.language }}</span></p>
+                        <p>Your Answer: {{ r.your_answer }}</p>
+                        <p class="result {% if r.status == 'Correct!' %}correct{% else %}incorrect{% endif %}">
+                            <i class="fas {% if r.status == 'Correct!' %}fa-check-circle{% else %}fa-times-circle{% endif %} feedback-icon"></i>
+                            {{ r.status }} {% if r.status != 'Correct!' %}(Correct: {{ r.correct_answer }}){% endif %}
+                        </p>
+                    </div>
+                {% endfor %}
+                
+                <div class="btn-container">
+                    <a href="{{ url_for('quiz') }}" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="progress-container">
+                <div class="progress-bar" style="--progress: 0;"></div>
+            </div>
+            
+            <form method="POST">
+                {% for i in range(questions|length) %}
+                    <div class="question-block animate-fade delay-{{ i % 3 }}">
+                        <p><strong>Q{{ i+1 }}. Translate "{{ questions[i].question }}"</strong> <span class="language-tag">{{ questions[i].language }}</span></p>
+                        
+                        <div class="options">
+                            {% for opt in questions[i].options %}
+                                <label class="option">
+                                    <input type="radio" name="answer_{{ i }}" value="{{ opt }}" required>
+                                    {{ opt }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Hidden values for result checking -->
+                        <input type="hidden" name="correct_{{ i }}" value="{{ questions[i].correct }}">
+                        <input type="hidden" name="question_{{ i }}" value="{{ questions[i].question }}">
+                        <input type="hidden" name="language_{{ i }}" value="{{ questions[i].language }}">
+                    </div>
+                {% endfor %}
+                
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Submit Answers
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

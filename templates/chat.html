@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaSphere | AI Translation Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4bb543;
+            --error: #ff3333;
+            --warning: #f39c12;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gradient-start: #3a0ca3;
+            --gradient-end: #7209b7;
+            --chat-bg: rgba(255, 255, 255, 0.98);
+            --user-bubble: linear-gradient(135deg, #4361ee, #3a0ca3);
+            --bot-bubble: #f0f4f8;
+            --text-dark: #2b2d42;
+            --text-light: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            animation: gradientShift 15s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .quiz-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .quiz-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
+            border: none;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+            height: calc(100vh - 160px);
+            display: flex;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: var(--chat-bg);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #2b2d42, #1a1a2e);
+            color: white;
+            padding: 25px 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .language-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .language-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .language-list::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 3px;
+        }
+
+        .language-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .language-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .language-item.active {
+            background: var(--primary);
+            font-weight: 500;
+        }
+
+        .language-flag {
+            width: 20px;
+            height: 15px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .chat-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .chat-status {
+            font-size: 0.8rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .messages-container {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNDgsIDI0OSwgMjUxLCAwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+        }
+
+        .message {
+            max-width: 70%;
+            margin-bottom: 15px;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-user {
+            align-self: flex-end;
+        }
+
+        .message-bot {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            word-wrap: break-word;
+        }
+
+        .user-bubble {
+            background: var(--user-bubble);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+
+        .bot-bubble {
+            background: var(--bot-bubble);
+            color: var(--text-dark);
+            border-top-left-radius: 5px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-top: 5px;
+            align-self: flex-end;
+        }
+
+        .message-user .message-time {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .input-container {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .language-selector {
+            position: relative;
+        }
+
+        .language-selector select {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            background: var(--light);
+            appearance: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding-right: 35px;
+        }
+
+        .language-selector::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .text-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border-radius: 20px;
+            border: none;
+            background: var(--light);
+            resize: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .text-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+
+        .action-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .action-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-button {
+            background: var(--primary);
+        }
+
+        .speak-button {
+            background: var(--warning);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 15px;
+            background: var(--bot-bubble);
+            border-radius: 18px;
+            width: fit-content;
+            margin-bottom: 15px;
+            border: 1px solid rgba(0,0,0,0.05);
+            align-self: flex-start;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #6c757d;
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        /* Special message styling */
+        .translation-text {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .greeting-text {
+            color: var(--success);
+        }
+
+        .error-text {
+            color: var(--error);
+            font-weight: 500;
+        }
+
+        .info-text {
+            color: var(--warning);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: calc(100vh - 120px);
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+                flex-direction: row;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                height: 60px;
+            }
+            
+            .sidebar-header {
+                display: none;
+            }
+            
+            .language-list {
+                display: flex;
+                gap: 8px;
+            }
+            
+            .language-item {
+                white-space: nowrap;
+                margin-bottom: 0;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-button {
+                flex-grow: 1;
+                justify-content: center;
+            }
+        }
+
+        /* Floating action button for mobile */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 100;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .fab {
+                display: flex;
+            }
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-comments logo-icon"></i>
+            <span>LinguaSphere</span>
+        </div>
+        <div class="nav-buttons">
+            <a href="/quiz" class="nav-button quiz-btn">
+                <i class="fas fa-gamepad"></i>
+                <span>Quiz</span>
+            </a>
+            <button onclick="location.href='{{ url_for('logout') }}'" class="nav-button logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-globe"></i>
+                <span>Languages</span>
+            </div>
+            <div class="language-list" id="language-list">
+                {% for code, lang in languages.items() %}
+                <div class="language-item" data-lang="{{ lang }}">
+                    <img src="https://flagcdn.com/16x12/{{ code }}.png" class="language-flag" alt="{{ lang }} flag">
+                    <span>{{ lang }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <div class="chat-title">Translation Assistant</div>
+                    <div class="chat-status">
+                        <div class="status-dot"></div>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+            <div class="messages-container" id="chat-messages">
+                <!-- Messages will be inserted here -->
+                <div class="message message-bot">
+                    <div class="message-bubble bot-bubble">
+                        <span class="greeting-text">Hello! I'm your AI translation assistant. Select a language and type 'translate [your text]' to get started.</span>
+                    </div>
+                    <div class="message-time">Just now</div>
+                </div>
+            </div>
+            <div class="input-container">
+                <div class="language-selector">
+                    <select id="target-language">
+                        <option value="" selected disabled>Select target language</option>
+                        {% for code, lang in languages.items() %}
+                        <option value="{{ lang }}">{{ lang }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-wrapper">
+                    <textarea id="user-input" class="text-input" placeholder="Type your message here..." rows="1"></textarea>
+                    <div class="action-buttons">
+                        <button id="speak-button" class="action-button speak-button" title="Speak">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button id="send-button" class="action-button send-button" title="Send">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fab" id="mobile-fab">
+        <i class="fas fa-comment-dots"></i>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const speakButton = document.getElementById('speak-button');
+        const targetLanguageSelect = document.getElementById('target-language');
+        const languageItems = document.querySelectorAll('.language-item');
+        const mobileFab = document.getElementById('mobile-fab');
+
+        
+        // Speech Synthesis
+        const synth = window.speechSynthesis;
+        let voices = [];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            userInput.focus();
+            autoGrowTextarea(userInput);
+            populateVoiceList();
+            
+            // Check if speech synthesis is supported
+            if (typeof speechSynthesis === 'undefined') {
+                speakButton.disabled = true;
+                speakButton.title = "Speech not supported";
+                speakButton.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+            }
+        });
+        
+        // Event Listeners
+        sendButton.addEventListener('click', sendMessage);
+        speakButton.addEventListener('click', speakLastBotMessage);
+        mobileFab.addEventListener('click', () => {
+            userInput.focus();
+            mobileFab.classList.add('pulse');
+            setTimeout(() => mobileFab.classList.remove('pulse'), 500);
+        });
+        
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+            autoGrowTextarea(userInput);
+        });
+        
+        userInput.addEventListener('input', () => autoGrowTextarea(userInput));
+        
+        // Language selection
+        languageItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const lang = item.getAttribute('data-lang');
+                targetLanguageSelect.value = lang;
+                
+                // Update active state
+                languageItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Add a message about language selection
+                appendMessage(`<span class="info-text">Selected target language: ${lang}</span>`, 'bot');
+            });
+        });
+        
+        // Functions
+        function autoGrowTextarea(element) {
+            element.style.height = 'auto';
+            element.style.height = (element.scrollHeight) + 'px';
+        }
+        
+        function appendMessage(content, sender) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${sender}`;
+            
+            const bubbleClass = sender === 'user' ? 'user-bubble' : 'bot-bubble';
+            
+            // Process content to add appropriate styling
+            let processedContent = content;
+            if (sender === 'bot') {
+                if (content.includes('Translation')) {
+                    processedContent = content.replace(/Translation(.*?):(.*)/, 
+                    'Translation<span class="translation-text">$1</span>:<span class="translation-text">$2</span>');
+                } else if (content.includes('Error')) {
+                    processedContent = `<span class="error-text">${content}</span>`;
+                }
+            }
+            
+            messageDiv.innerHTML = `
+            <div class="message-bubble ${bubbleClass}">${processedContent}</div>
+            <div class="message-time">${timeString}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <span>Typing...</span>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+        
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+            
+            appendMessage(message, 'user');
+            userInput.value = '';
+            autoGrowTextarea(userInput);
+            
+            showTypingIndicator();
+            
+            const targetLanguage = targetLanguageSelect.value;
+            
+            fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    target_language: targetLanguage
+                })
+            })
+            .then(response => {
+                hideTypingIndicator();
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'An error occurred');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.translation) {
+                    appendMessage(data.translation, 'bot');
+                } else if (data.error) {
+                    appendMessage(`Error: ${data.error}`, 'bot');
+                }
+            })
+            .catch(error => {
+                hideTypingIndicator();
+                appendMessage(`Error: ${error.message}`, 'bot');
+            });
+        }
+        
+        function populateVoiceList() {
+            voices = synth.getVoices();
+        }
+        
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+        
+        function speakLastBotMessage() {
+            if (synth.speaking) {
+                synth.cancel();
+                return;
+            }
+            
+            const botMessages = document.querySelectorAll('.message-bot .message-bubble');
+            if (botMessages.length === 0) return;
+            
+            const lastMessage = botMessages[botMessages.length - 1];
+            const textToSpeak = lastMessage.textContent || lastMessage.innerText;
+            
+            if (!textToSpeak.trim()) return;
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            
+            // Try to match language
+            if (targetLanguageSelect.value) {
+                const langName = targetLanguageSelect.value.toLowerCase();
+                if (langName.includes('spanish')) {
+                    utterance.lang = 'es-ES';
+                } else if (langName.includes('french')) {
+                    utterance.lang = 'fr-FR';
+                } else if (langName.includes('german')) {
+                    utterance.lang = 'de-DE';
+                }else if (langName.includes('hindi')) {
+                    utterance.lang = 'hi-IN';
+                }else if (langName.includes('chinese')) {
+                    utterance.lang = 'zh-CN';
+                }else if (langName.includes('spanish')) {
+                    utterance.lang = 'es-ES';
+                }else if (langName.includes('japanese')) {
+                    utterance.lang = 'ja-JP';
+                }else if (langName.includes('russian')) {
+                    utterance.lang = 'ru-RU';
+                }else if (langName.includes('Portuguese ')) {
+                    utterance.lang = 'pt-PT';
+                }else if (langName.includes('Turkish')) {
+                    utterance.lang = 'tr-TR';
+                }else if (langName.includes('Vietnamese')) {
+                    utterance.lang = 'vi-VN';
+                }else if (langName.includes('Dutch')) {
+                    utterance.lang = 'nl-NL';
+                }else if (langName.includes('Swedish')) {
+                    utterance.lang = 'sv-SE';
+                }
+                
+                // Add more language mappings as needed
+            }
+            
+            // Try to find a matching voice
+            if (voices.length > 0) {
+                const targetLang = utterance.lang || 'en-US';
+                const matchingVoice = voices.find(voice => voice.lang === targetLang);
+                if (matchingVoice) {
+                    utterance.voice = matchingVoice;
+                }
+            }
+            
+            utterance.onstart = () => {
+                speakButton.innerHTML = '<i class="fas fa-stop"></i>';
+                speakButton.style.background = 'var(--error)';
+            };
+            
+            utterance.onend = utterance.onerror = () => {
+                speakButton.innerHTML = '<i class="fas fa-microphone"></i>';
+                speakButton.style.background = 'var(--warning)';
+            };
+            
+            synth.speak(utterance);
+        }
+    </script>
+</body>
+</html>

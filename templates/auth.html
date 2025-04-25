@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaLink | AI Translation Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Enhanced Color Scheme */
+            --primary: #00f0ff;
+            --primary-dark: #00a8ff;
+            --secondary: #ff2d75;
+            --accent: #9c27b0;
+            --dark: #0f172a;
+            --darker: #0a1120;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --success: #4ade80;
+            
+            /* Improved Gradients */
+            --bg-gradient: radial-gradient(circle at 10% 20%, #0f172a 0%, #1e293b 100%);
+            --card-gradient: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+            --button-gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            --button-hover-gradient: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            
+            /* Enhanced Effects */
+            --glow: 0 0 20px rgba(0, 240, 255, 0.4);
+            --glow-hover: 0 0 30px rgba(0, 240, 255, 0.6);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-gradient);
+            color: var(--light);
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Animated background elements */
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        .bg-element-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            top: -150px;
+            left: -150px;
+            animation: float 15s ease-in-out infinite alternate;
+        }
+
+        .bg-element-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--secondary);
+            bottom: -200px;
+            right: -200px;
+            animation: float 18s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(50px, 50px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            background: var(--card-gradient);
+            border-radius: 20px;
+            box-shadow: var(--glow), var(--shadow);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .auth-container:hover {
+            box-shadow: var(--glow-hover), var(--shadow);
+            transform: translateY(-5px);
+        }
+
+        /* Animated border effect */
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: rotate-border 6s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes rotate-border {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Logo section */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: inline-block;
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .logo h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .logo p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Input fields */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+            font-weight: 400;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        input:focus + i {
+            color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        input::placeholder {
+            color: var(--gray);
+            font-weight: 300;
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .login-btn {
+            background: var(--button-gradient);
+            color: var(--darker);
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .login-btn:hover {
+            background: var(--button-hover-gradient);
+            box-shadow: 0 6px 25px rgba(0, 240, 255, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .register-btn {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .register-btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            margin: 0 15px;
+        }
+
+        /* Social login */
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--light);
+            font-size: 1.2rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-btn.google:hover { 
+            background: #EA4335;
+            color: white;
+            border-color: #EA4335;
+        }
+        .social-btn.github:hover { 
+            background: var(--primary);
+            color: var(--dark);
+            border-color: var(--primary);
+        }
+        .social-btn.twitter:hover { 
+            background: #1DA1F2;
+            color: white;
+            border-color: #1DA1F2;
+        }
+
+        /* Footer text */
+        .footer-text {
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-top: 25px;
+            line-height: 1.6;
+        }
+
+        .footer-text a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .footer-text a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Welcome state */
+        .welcome-state {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--success);
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-state h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--success) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .welcome-state p {
+            color: var(--gray);
+            margin-bottom: 30px;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .username {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+            padding: 14px 30px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(255, 45, 117, 0.1);
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 45, 117, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 45, 117, 0.2);
+        }
+
+        /* Error message */
+        .error-message {
+            background: rgba(255, 45, 117, 0.1);
+            color: var(--secondary);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 45, 117, 0.3);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: shake 0.5s;
+            font-size: 0.95rem;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            animation: float-up linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 30px 20px;
+            }
+            
+            .logo h2 {
+                font-size: 1.6rem;
+            }
+            
+            .logo-icon {
+                font-size: 2.8rem;
+            }
+            
+            input {
+                padding: 14px 18px 14px 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-element bg-element-1"></div>
+    <div class="bg-element bg-element-2"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="auth-container">
+        {% if 'username' in session %}
+            <div class="welcome-state">
+                <i class="fas fa-check-circle welcome-icon"></i>
+                <h2>Authentication Successful</h2>
+                <p>Welcome back <span class="username">{{ session['username'] }}</span>, you're now ready to access the AI translation portal.</p>
+                <button class="logout-btn" onclick="window.location.href='{{ url_for('logout') }}'">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        {% else %}
+            <div class="logo">
+                <i class="fas fa-language logo-icon"></i>
+                <h2>LinguaLink</h2>
+                <p>Seamless AI-powered translation experience</p>
+            </div>
+            
+            {% if error %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+            
+            <form method="post">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" name="login" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                
+                <div class="divider">Or Continue With</div>
+                
+                <div class="social-login">
+                    <button type="button" class="social-btn google">
+                        <i class="fab fa-google"></i>
+                    </button>
+                    <button type="button" class="social-btn github">
+                        <i class="fab fa-github"></i>
+                    </button>
+                    <button type="button" class="social-btn twitter">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                </div>
+                
+                <button type="submit" name="register" class="register-btn">
+                    <i class="fas fa-user-plus"></i> Create New Account
+                </button>
+            </form>
+            
+            <p class="footer-text">
+                By continuing, you agree to our <a href="#">Terms of Service</a> and acknowledge you've read our <a href="#">Privacy Policy</a>.
+            </p>
+        {% endif %}
+    </div>
+
+    <script>
+        // Create floating particles
+        document.addEventListener('DOMContentLoaded', function() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = window.innerWidth < 480 ? 15 : 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 6 + 2;
+                const posX = Math.random() * 100;
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * -20;
+                const blur = Math.random() * 3 + 1;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.filter = `blur(${blur}px)`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Add input focus effects
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.querySelector('i').style.color = 'var(--primary)';
+                });
+                
+                input.addEventListener('blur', () => {
+                    input.parentElement.querySelector('i').style.color = 'var(--gray)';
+                });
+            });
+            
+            // Add button ripple effect
+            const buttons = document.querySelectorAll('button:not(.social-btn)');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const x = e.clientX - e.target.getBoundingClientRect().left;
+                    const y = e.clientY - e.target.getBoundingClientRect().top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    ripple.style.left = `${x}px`;
+                    ripple.style.top = `${y}px`;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 1000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
