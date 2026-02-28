@@ -265,6 +265,5 @@ def strip_html(text):
 def quiz_history():
     return render_template("quiz.html", quiz_over=True, results=session.get('quiz_results', []), score=0)
 
-if __name__ == '__main__':
-    # Make sure debug=False in production
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run()
